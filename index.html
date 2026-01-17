@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will You Be My Valentine?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ffe6e6;
+      font-family: 'Nunito', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Background Image Container - Polaroid Style */
+    #bg-image {
+      position: fixed;
+      top: 50%;
+      left: 80%;
+      width: 300px;
+      height: 400px;
+      background-image: url('img/WhatsApp Image 2025-12-29 at 21.46.24.jpeg');
+      background-size: cover;
+      background-position: center;
+      border-radius: 15px;
+      border: 12px solid white;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+      transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+      z-index: 5;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      pointer-events: none;
+    }
+
+    #bg-image.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1) rotate(-5deg);
+      transition: opacity 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @media (max-width: 1000px) {
+      #bg-image {
+        left: 50%;
+        top: 85%;
+        width: 200px;
+        height: 266px;
+        transform: translate(-50%, -50%) scale(0.5) rotate(5deg);
+      }
+      #bg-image.active {
+        transform: translate(-50%, -50%) scale(1) rotate(5deg);
+      }
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 230, 230, 0.95);
+      z-index: 1;
+      transition: background-color 2s ease;
+      pointer-events: none;
+    }
+
+    .overlay.active {
+      background-color: rgba(255, 230, 230, 0.4);
+      transition: background-color 0.6s ease;
+    }
+
+    .container {
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .gif-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      min-height: 200px; /* Ensure space is reserved */
+    }
+
+    .gif-container img {
+      width: 180px;
+      height: auto;
+      border-radius: 15px;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+      display: block;
+    }
+
+    .gif-container img:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    #secondGif {
+      display: none;
+    }
+
+    h1 {
+      color: #ff4d6d;
+      font-size: 2rem;
+      margin: 0;
+      text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 800;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    #yesBtn {
+      background-color: #0a192f;
+      color: white;
+      border: 2px solid #0a192f;
+    }
+
+    #yesBtn:hover {
+      background-color: #112240;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(10, 25, 47, 0.5);
+    }
+
+    #noBtn {
+      background-color: #ffffff;
+      color: #ff4d6d;
+      border: 2px solid #ff4d6d;
+    }
+
+    #noBtn:hover {
+      background-color: #fff0f3;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .heart {
+      position: absolute;
+      color: #ff4d6d;
+      opacity: 0;
+      animation: float 6s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) scale(0.5);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    .secret-container {
+      margin-top: 20px;
+      opacity: 0;
+      transition: opacity 1s ease-in;
+      cursor: pointer;
+    }
+
+    .secret-text {
+      font-size: 1.5rem;
+      color: #ff3355;
+      font-weight: 900;
+      margin-bottom: 5px;
+      text-shadow: 2px 2px 0px #ffffff, 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    .hover-reveal {
+      font-size: 1.2rem;
+      color: #0a192f;
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: max-width 2s ease-in-out;
+      border-right: 3px solid #ff4d6d;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .secret-container:hover .hover-reveal {
+      max-width: 800px;
+    }
+
+    .sub-text {
+      font-size: 1.1rem;
+      color: #ff4d6d;
+      margin-top: 5px;
+      font-weight: 600;
+    }
+
+    #music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      z-index: 100;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="bg-image"></div>
+<div class="overlay"></div>
+<div id="hearts-container"></div>
+
+<audio id="bgMusic" loop autoplay>
+  <source src="song.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<div id="music-control">🔊</div>
+
+<div class="container">
+  <div class="gif-container">
+    <!-- Using the local GIF you mentioned -->
+    <img id="mainGif" src="img/c06860b058d7aadaa28874be0a723947.gif" alt="Cute Bear">
+    <img id="secondGif" src="https://media.tenor.com/bX9v6h7gUoAAAAAi/mochi-cat-flower.gif" alt="Cute Cat Flower">
+  </div>
+
+  <h1 id="question">Will you be my Valentine? 🌹</h1>
+
+  <div class="buttons">
+    <button id="yesBtn" class="btn">Yes</button>
+    <button id="noBtn" class="btn">No</button>
+  </div>
+
+  <div id="successMessage" class="hidden">
+    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Yay! I love you! ❤️</h1>
+    <p style="font-size: 1.2rem; color: #ff4d6d;">I'll make you brownies! 🍫</p>
+    <p class="sub-text">(and we can be cows together 🐮)</p>
+
+    <div class="secret-container">
+      <p class="secret-text">Guess what?</p>
+      <div class="hover-reveal">I'll be your lover forever and nothing will ever change my future with you</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const question = document.getElementById('question');
+  const mainGif = document.getElementById('mainGif');
+  const secondGif = document.getElementById('secondGif');
+  const buttonsContainer = document.querySelector('.buttons');
+  const successMessage = document.getElementById('successMessage');
+  const secretContainer = document.querySelector('.secret-container');
+  const overlay = document.querySelector('.overlay');
+  const bgImageDiv = document.getElementById('bg-image');
+  const musicControl = document.getElementById('music-control');
+  const bgMusic = document.getElementById('bgMusic');
+
+  let isPlaying = true;
+
+  function toggleMusic() {
+    if (isPlaying) {
+      bgMusic.pause();
+      musicControl.innerText = "🔇";
+      isPlaying = false;
+    } else {
+      bgMusic.play().then(() => {
+        musicControl.innerText = "🔊";
+        isPlaying = true;
+      }).catch(e => console.log("Audio play failed:", e));
+    }
+  }
+
+  musicControl.addEventListener('click', toggleMusic);
+
+  bgMusic.play().catch(error => {
+    console.log("Autoplay blocked by browser. Waiting for interaction.");
+    document.body.addEventListener('click', () => {
+      if (isPlaying) {
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
+      }
+    }, { once: true });
+  });
+
+  const noTexts = [
+    "Are you sure?",
+    "Really sure?",
+    "Think again!",
+    "Last chance!",
+    "Surely not?",
+    "You might regret this!",
+    "Give it another thought!",
+    "Are you absolutely certain?",
+    "This could be a mistake!",
+    "Have a heart!",
+    "Don't be so cold!",
+    "Change of heart?",
+    "Wouldn't you reconsider?",
+    "Is that your final answer?",
+    "You're breaking my heart ;(",
+    "okay enough now, stop pressing no",
+    "I'm warning you!!",
+    "Stop it it's enough!",
+    "I SAID ENOUGH!!"
+  ];
+
+  let noCount = 0;
+
+  noBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const text = noTexts[noCount];
+    noBtn.innerText = text || noTexts[noTexts.length - 1];
+    noCount++;
+
+    // Hide the intro gif on first No click
+    // FIXED: Only hide if it's the intro gif (not the success gif)
+    // We check if successMessage is hidden to know we are in the "question" phase
+    if (successMessage.classList.contains('hidden')) {
+      if (mainGif.style.display !== 'none') {
+        mainGif.style.opacity = '0';
+        setTimeout(() => {
+          mainGif.style.display = 'none';
+        }, 500);
+      }
+    }
+
+    const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+    const currentPaddingTop = parseFloat(window.getComputedStyle(yesBtn).paddingTop);
+    const currentPaddingRight = parseFloat(window.getComputedStyle(yesBtn).paddingRight);
+
+    if (noCount > noTexts.length) {
+      noBtn.classList.add("hidden");
+      yesBtn.style.fontSize = "5rem";
+      yesBtn.innerText = "YES!!!!";
+      return;
+    }
+
+    if (currentSize < 300) {
+      yesBtn.style.fontSize = `${currentSize * 1.3}px`;
+      yesBtn.style.padding = `${currentPaddingTop * 1.2}px ${currentPaddingRight * 1.2}px`;
+    }
+  });
+
+  yesBtn.addEventListener('mouseenter', () => {
+    bgImageDiv.classList.add('active');
+    overlay.classList.add('active');
+  });
+
+  yesBtn.addEventListener('mouseleave', () => {
+    if (question.classList.contains('hidden')) return;
+    bgImageDiv.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+
+  yesBtn.addEventListener('click', () => {
+    question.classList.add('hidden');
+    buttonsContainer.classList.add('hidden');
+    successMessage.classList.remove('hidden');
+
+    bgImageDiv.classList.add('active');
+    overlay.classList.add('active');
+    overlay.style.backgroundColor = "rgba(255, 230, 230, 0.3)";
+
+    setTimeout(() => {
+      secretContainer.style.opacity = '1';
+    }, 1000);
+
+    // Show both GIFs for the success screen
+    mainGif.style.display = 'block';
+    setTimeout(() => { mainGif.style.opacity = '1'; }, 10);
+
+    secondGif.style.display = 'block';
+
+    mainGif.src = "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif";
+    secondGif.src = "https://media.tenor.com/5mY0_Oou2VkAAAAi/peach-goma.gif";
+
+    createHearts();
+  });
+
+  function createHearts() {
+    const container = document.getElementById('hearts-container');
+    for (let i = 0; i < 30; i++) {
+      spawnHeart(container);
+    }
+    setInterval(() => {
+      spawnHeart(container);
+    }, 300);
+  }
+
+  function spawnHeart(container) {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    const emojis = ['❤️', '💖', '💝', '💕', '💓', '💗', '💞', '💘', '🥰', '😍', '😘', '🐮', '🍫', '🧁'];
+    heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+    heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+    container.appendChild(heart);
+    setTimeout(() => {
+      heart.remove();
+    }, 5000);
+  }
+</script>
+</body>
+</html>
