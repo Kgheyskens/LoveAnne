@@ -93,6 +93,7 @@
       align-items: center;
       gap: 15px;
       min-height: 200px; /* Ensure space is reserved */
+      transition: margin 0.3s ease;
     }
 
     .gif-container img {
@@ -107,6 +108,10 @@
     @media (max-width: 600px) {
       .gif-container img {
         width: 140px; /* Smaller GIFs on mobile */
+      }
+
+      .gif-container {
+          margin-bottom: 10px; /* Add some space below GIFs on mobile */
       }
     }
 
@@ -182,7 +187,50 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important; /* Force hide */
+    }
+
+    /* Success Message Styling */
+    #successMessage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #successMessage h1 {
+        font-size: 2.5rem;
+        margin: 0 0 10px 0;
+        color: #ff4d6d;
+    }
+
+    #successMessage p {
+        font-size: 1.2rem;
+        color: #ff4d6d;
+        margin: 0;
+    }
+
+    /* Mobile specific adjustments for Success Screen */
+    @media (max-width: 600px) {
+        #successMessage {
+            gap: 15px; /* More breathing room between lines */
+            margin-top: 10px;
+            padding-bottom: 40px; /* Space at bottom */
+        }
+
+        #successMessage h1 {
+            font-size: 2rem; /* Smaller title */
+            margin-bottom: 5px;
+        }
+
+        #successMessage p {
+            font-size: 1.1rem;
+        }
+
+        .secret-container {
+            margin-top: 30px !important; /* Push secret container down a bit more */
+            width: 90%; /* Ensure it fits nicely */
+        }
     }
 
     .heart {
@@ -302,8 +350,8 @@
   </div>
 
   <div id="successMessage" class="hidden">
-    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Yay! I love you! ❤️</h1>
-    <p style="font-size: 1.2rem; color: #ff4d6d;">I'll make you brownies! 🍫</p>
+    <h1>Yay! I love you! ❤️</h1>
+    <p>I'll make you brownies! 🍫</p>
     <p class="sub-text">(and we can be cows together 🐮)</p>
 
     <div class="secret-container">
@@ -432,6 +480,7 @@
     question.classList.add('hidden');
     buttonsContainer.classList.add('hidden');
     successMessage.classList.remove('hidden');
+    successMessage.style.display = 'flex'; // Ensure flex layout is applied
 
     bgImageDiv.classList.add('active');
     overlay.classList.add('active');
